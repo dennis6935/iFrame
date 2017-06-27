@@ -1,119 +1,23 @@
 <!DOCTYPE html>
-<!--
- *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree.
--->
 <html>
 <head>
+	<title></title>
+	<script type="text/javascript">
+		// Prefer camera resolution nearest to 1280x720.
+		var constraints = { audio: true, video: { width: 1280, height: 720 } }; 
 
-  <meta charset="utf-8">
-  <meta name="description" content="WebRTC code samples">
-  <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
-  <meta itemprop="description" content="Client-side WebRTC code samples">
-  <meta itemprop="image" content="../../../images/webrtc-icon-192x192.png">
-  <meta itemprop="name" content="WebRTC code samples">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta id="theme-color" name="theme-color" content="#ffffff">
-
-  <base target="_blank">
-
-  <title>captureStream(): video to video</title>
-
-  <link rel="icon" sizes="192x192" href="../../../images/webrtc-icon-192x192.png">
-  <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="../../../css/main.css" />
-  <link rel="stylesheet" href="css/main.css" />
-
-  <script type="text/javascript">
-    'use strict';
-
-      var leftVideo = document.getElementById('leftVideo');
-      var rightVideo = document.getElementById('rightVideo');
-
-      var stream;
-
-      function maybeCreateStream() {
-        if (stream) {
-          return;
-        }
-        if (leftVideo.captureStream) {
-          stream = leftVideo.captureStream();
-          rightVideo.srcObject = stream;
-          console.log('Captured stream from leftVideo with captureStream',
-            stream);
-        } else if (leftVideo.mozCaptureStream) {
-          stream = leftVideo.mozCaptureStream();
-          rightVideo.srcObject = stream;
-          console.log('Captured stream from leftVideo with mozCaptureStream()',
-            stream);
-        } else {
-          console.log('captureStream() not supported');
-        }
-      }
-
-      // Video tag capture must be set up after video tracks are loaded.
-      leftVideo.oncanplay = maybeCreateStream;
-      if (leftVideo.readyState >= 3) {  // HAVE_FUTURE_DATA
-        // Video is already ready to play, call maybeCreateStream in case oncanplay
-        // fired before we registered the event handler.
-        maybeCreateStream();
-      }
-
-      leftVideo.play();
-  </script>
-
-  <style type="text/css">
-    video {
-      margin: 0 10px 0 0;
-      width: calc(50% - 7px);
-    }
-
-    video:last-of-type {
-      margin-right: 0;
-    }
-
-    @media screen and (max-width: 400px) {
-      video {
-        margin: 0 5px 20px 0;
-        width: calc(50% - 5px);
-      }
-    }
-  </style>
-
+		navigator.mediaDevices.getUserMedia(constraints).then(function(mediaStream) {
+		  var video = document.querySelector('video');
+		  video.srcObject = mediaStream;
+		  video.onloadedmetadata = function(e) {
+		    video.play();
+		  };
+		}).catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+	</script>
 </head>
-
 <body>
-
-  <div id="container">
-
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>captureStream(): video to video</span></h1>
-
-    <video id="leftVideo" controls muted>
-      <!-- NB CORS: https://bugzilla.mozilla.org/show_bug.cgi?id=1177793 -->
-      <source src="../../../video/chrome.webm" type="video/webm" />
-      <source src="../../../video/chrome.mp4" type="video/mp4" />
-      <p>This browser does not support the video element.</p>
-    </video>
-
-    <video id="rightVideo" autoplay controls></video>
-
-    <p>This demo requires Firefox 47, or Chrome 53 with <strong>Experimental Web Platform features</strong> enabled from <tt>chrome://flags</tt>.</p>
-
-    <p>A stream is captured from the video element on the left using its <code>captureStream()</code> method and set as the <code>srcObject</code> of the video element on the right.</p>
-
-    <p>The <code>stream</code> variable are in global scope, so you can inspect them from the browser console.</p>
-
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/capture/video-video" title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
-
-  </div>
-
-  <script src="js/main.js"></script>
-
-  <script src="../../../js/lib/ga.js"></script>
+		<h1>Video Capture</h1>
+		<br>
+		<video></video>
 </body>
-</html>
-
-
+</html>			
